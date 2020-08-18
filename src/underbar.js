@@ -190,14 +190,14 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    collection = [...collection];
-
-    if (accumulator === undefined) {
-      accumulator = collection.shift();
-    }
-
+    var firstPass = true;
     _.each(collection, function(element) {
-      accumulator = iterator(accumulator, element);
+      if (firstPass && accumulator === undefined) {
+        accumulator = element;
+        firstPass = false;
+      } else {
+        accumulator = iterator(accumulator, element);
+      }
     });
 
     return accumulator;
