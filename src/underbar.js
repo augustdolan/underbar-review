@@ -141,6 +141,13 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    const results = [];
+
+    // loop through collection
+    _.each(collection, function(element) {
+      results.push(iterator(element));
+    });
+    return results;
   };
 
   /*
@@ -152,6 +159,7 @@
   // Takes an array of objects and returns and array of the values of
   // a certain property in it. E.g. take an array of people and return
   // an array of just their ages
+
   _.pluck = function(collection, key) {
     // TIP: map is really handy when you want to transform an array of
     // values into a new array of values. _.pluck() is solved for you
@@ -182,6 +190,17 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    collection = [...collection];
+
+    if (accumulator === undefined) {
+      accumulator = collection.shift();
+    }
+
+    _.each(collection, function(element) {
+      accumulator = iterator(accumulator, element);
+    });
+
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
