@@ -233,7 +233,10 @@
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
+    iterator = iterator || _.identity;
+    return !_.every(collection, function(element) {
+      return !iterator(element);
+    });
   };
 
 
@@ -256,11 +259,31 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    let args = Array.from(arguments);
+    args.shift();
+
+    _.each(args, function(element) {
+      _.each(element, function(value, key) {
+        obj[key] = value;
+      });
+    });
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    let args = Array.from(arguments);
+    args.shift();
+
+    _.each(args, function(element) {
+      _.each(element, function(value, key) {
+        if (obj[key] === undefined) {
+          obj[key] = value;
+        }
+      });
+    });
+    return obj;
   };
 
 
@@ -304,6 +327,16 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    const cache = {};
+
+    return function() {
+      let stringifiedKey = JSON.stringify(arguments);
+
+      if (!cache[stringifiedKey]) {
+        cache[stringifiedKey] = func.apply(this, arguments);
+      }
+      return cache[stringifiedKey];
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -313,6 +346,8 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    const args = Array.from(arguments);
+    setTimeout(() => func.apply(this, args.slice(2)), wait);
   };
 
 
